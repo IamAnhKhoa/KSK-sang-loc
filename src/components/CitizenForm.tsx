@@ -178,7 +178,9 @@ export const CitizenForm: React.FC<CitizenFormProps> = ({
           ...scannedData,
           dob: dobConverted,
           current_address: addressConverted.current_address || scannedData.current_address || prev.current_address || '',
-          ward: scannedData.ward || addressConverted.ward || prev.ward || 'Xã Tân An Hội',
+          ward: (addressConverted.ward && addressConverted.ward !== 'Xã Tân An Hội')
+            ? addressConverted.ward
+            : (scannedData.ward || addressConverted.ward || 'Xã Tân An Hội'),
           city: addressConverted.city || prev.city || 'Thành Phố Hồ Chí Minh',
           old_address_note: addressConverted.old_address_note || '',
           workplace: prev.workplace || '',

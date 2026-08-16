@@ -99,7 +99,7 @@ async function getLogoBase64(): Promise<string> {
     `<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px;margin-right:4px;display:inline-block;"><rect x="1" y="1" width="11" height="11" fill="#fff" stroke="#000" stroke-width="1.2"/>${checked ? '<path d="M 2.5 6 L 5 9 L 9.5 3" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' : ''}</svg>`;
 
   return `
-<div style="font-family:'Times New Roman',Times,serif;font-size:11.5px;color:#000;line-height:1.45;padding:12px 24px;background:#fff;width:740px;box-sizing:border-box;margin:0 auto;">
+<div style="font-family:'Times New Roman',Times,serif;font-size:11.5px;color:#000;line-height:1.45;padding:10px 24px;background:#fff;width:740px;box-sizing:border-box;margin:0 auto;">
   <!-- Header -->
   <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
     <div style="text-align:center;width:45%;">
@@ -170,12 +170,12 @@ async function getLogoBase64(): Promise<string> {
   </div>
 
   <!-- Signature -->
-  <div style="display:flex;justify-content:flex-end;margin-top:12px;text-align:center;">
+  <div style="display:flex;justify-content:flex-end;margin-top:8px;text-align:center;">
     <div style="width:260px;">
       <div style="font-style:italic;font-size:11px;">Tân An Hội, ngày ..... tháng ${currentMonth} năm 2026</div>
-      <div style="margin-top:3px;font-weight:bold;font-size:11.5px;">Người khai</div>
+      <div style="margin-top:2px;font-weight:bold;font-size:11.5px;">Người khai</div>
       <div style="font-size:10.5px;font-style:italic;">(Ký và ghi rõ họ tên)</div>
-      <div style="height:72px;"></div>
+      <div style="height:60px;"></div>
       <div style="text-transform:uppercase;font-weight:bold;font-size:11.5px;">${r.full_name || ''}</div>
     </div>
   </div>
