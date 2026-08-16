@@ -50,10 +50,10 @@ async function getLogoBase64(): Promise<string> {
   const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
   const dots = (n: number) => '.'.repeat(n);
 
-  const dotsOrVal = (val?: string, dotCount: number = 30, uppercase: boolean = false) => {
+  const dotsOrVal = (val?: string, dotCount: number = 30, uppercase: boolean = false, isBold: boolean = false) => {
     const v = (val || '').trim();
     if (!v) return dots(dotCount);
-    return `<b style="font-weight:bold;${uppercase ? ' text-transform:uppercase;' : ''}">${v}</b>`;
+    return `<span style="${isBold ? 'font-weight:bold;' : ''}${uppercase ? 'text-transform:uppercase;' : ''}">${v}</span>`;
   };
 
   // Single SVG element for entire CCCD box group (100% pixel-perfect vector rendering in html2canvas)
@@ -63,7 +63,7 @@ async function getLogoBase64(): Promise<string> {
       const x = i * 18;
       return `<rect x="${x + 1}" y="1" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1.2"/><text x="${x + 9}" y="11" font-family="'Times New Roman', serif" font-size="12.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#000">${ch}</text>`;
     }).join('');
-    return `<svg width="225" height="22" viewBox="0 0 225 22" style="vertical-align:middle;margin-left:4px;display:inline-block;">${boxes}</svg>`;
+    return `<svg width="225" height="22" viewBox="0 0 225 22" style="vertical-align:-4px;margin-left:4px;display:inline-block;">${boxes}</svg>`;
   };
 
   // Single SVG element for entire BHYT box group
@@ -85,7 +85,7 @@ async function getLogoBase64(): Promise<string> {
       return `<rect x="${x + 1}" y="1" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1.2"/><text x="${x + 9}" y="11" font-family="'Times New Roman', serif" font-size="12.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#000">${ch}</text>`;
     }).join('');
 
-    return `<svg width="295" height="22" viewBox="0 0 295 22" style="vertical-align:middle;margin-left:4px;display:inline-block;">${part1}${dash}${part2}</svg>`;
+    return `<svg width="295" height="22" viewBox="0 0 295 22" style="vertical-align:-4px;margin-left:4px;display:inline-block;">${part1}${dash}${part2}</svg>`;
   };
 
   const cccdStr = (r.cccd || '').replace(/\D/g, '');
@@ -96,7 +96,7 @@ async function getLogoBase64(): Promise<string> {
 
   // SVG Checkbox square with vector checkmark
   const cb = (checked: boolean) =>
-    `<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:middle;margin-right:4px;display:inline-block;"><rect x="1" y="1" width="11" height="11" fill="#fff" stroke="#000" stroke-width="1.2"/>${checked ? '<path d="M 2.5 6 L 5 9 L 9.5 3" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' : ''}</svg>`;
+    `<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px;margin-right:4px;display:inline-block;"><rect x="1" y="1" width="11" height="11" fill="#fff" stroke="#000" stroke-width="1.2"/>${checked ? '<path d="M 2.5 6 L 5 9 L 9.5 3" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' : ''}</svg>`;
 
   return `
 <div style="font-family:'Times New Roman',Times,serif;font-size:11.5px;color:#000;line-height:1.45;padding:12px 24px;background:#fff;width:740px;box-sizing:border-box;margin:0 auto;">
@@ -122,7 +122,7 @@ async function getLogoBase64(): Promise<string> {
   <!-- A. THÔNG TIN HÀNH CHÍNH -->
   <div style="font-weight:bold;font-size:11.5px;margin-bottom:4px;">A.&nbsp;&nbsp;THÔNG TIN HÀNH CHÍNH</div>
   <div style="font-size:11.5px;">
-    <div style="padding:1.5px 0;">1.&nbsp;&nbsp;Họ và tên <i>(viết chữ in hoa)</i>: ${dotsOrVal(r.full_name, 45, true)}</div>
+    <div style="padding:1.5px 0;">1.&nbsp;&nbsp;Họ và tên <i>(viết chữ in hoa)</i>: ${dotsOrVal(r.full_name, 45, true, true)}</div>
     <div style="padding:1.5px 0;">2.&nbsp;&nbsp;Giới tính:&nbsp;&nbsp;${cb(r.gender==='Nam')}&nbsp;Nam &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${cb(r.gender==='Nữ')}&nbsp;Nữ</div>
     <div style="padding:1.5px 0;">3.&nbsp;&nbsp;Ngày tháng năm sinh: ${dotsOrVal(fmtDate(r.dob), 30)}</div>
     <div style="padding:1.5px 0;">4.&nbsp;&nbsp;Dân tộc: ${dotsOrVal(r.ethnicity || 'Kinh', 25)}</div>

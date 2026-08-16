@@ -169,59 +169,59 @@ function buildDoc(r: HealthRecord): Document {
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            normal('3. Ngày tháng năm sinh: '), bold(fmtDate(r.dob) || '..............'),
+            normal('3. Ngày tháng năm sinh: '), normal(fmtDate(r.dob) || '..............'),
             normal('        '),
-            normal('4. Dân tộc: '), bold(r.ethnicity || 'Kinh'),
+            normal('4. Dân tộc: '), normal(r.ethnicity || 'Kinh'),
             normal('        '),
-            normal('5. Nhóm máu '), italic('(nếu có)'), normal(': '), bold(r.blood_type || '..............')
+            normal('5. Nhóm máu '), italic('(nếu có)'), normal(': '), normal(r.blood_type || '..............')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            normal('6. Số CCCD/Mã số định danh: '), bold(r.cccd || '..............'),
+            normal('6. Số CCCD/Mã số định danh: '), normal(r.cccd || '..............'),
             normal('        '),
-            normal('7. Số thẻ BHYT: '), bold(r.bhyt || '..............')
+            normal('7. Số thẻ BHYT: '), normal(r.bhyt || '..............')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            normal('8. Nơi ở hiện tại: '), bold(currentAddress || '........................................'),
+            normal('8. Nơi ở hiện tại: '), normal(currentAddress || '........................................'),
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            normal('    Xã, phường: '), bold(ward || 'Xã Tân An Hội'),
+            normal('    Xã, phường: '), normal(ward || 'Xã Tân An Hội'),
             normal('        '),
-            normal('Thành phố: '), bold(city || 'Thành Phố Hồ Chí Minh')
+            normal('Thành phố: '), normal(city || 'Thành Phố Hồ Chí Minh')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            normal('9. Nghề nghiệp: '), bold(r.job || '..............'),
+            normal('9. Nghề nghiệp: '), normal(r.job || '..............'),
             normal('        '),
-            normal('10. Nơi làm việc, học tập: '), bold(r.workplace || '..............')
+            normal('10. Nơi làm việc, học tập: '), normal(r.workplace || '..............')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            normal('11. Họ tên mẹ hoặc người giám hộ '), italic('(đối với trẻ từ 16 tuổi trở xuống)'), normal(': '), bold(r.guardian_name || '........................................................')
+            normal('11. Họ tên mẹ hoặc người giám hộ '), italic('(đối với trẻ từ 16 tuổi trở xuống)'), normal(': '), normal(r.guardian_name || '........................................................')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 60 },
           children: [
-            normal('12. Điện thoại di động: '), bold(r.phone || '..............')
+            normal('12. Điện thoại di động: '), normal(r.phone || '..............')
           ]
         }),
 
@@ -278,14 +278,14 @@ function buildDoc(r: HealthRecord): Document {
         new Paragraph({
           spacing: { before: 60, after: 40 },
           children: [
-            bold('2. Ngày khám: '), bold(fmtDate(r.exam_date) || '..............')
+            bold('2. Ngày khám: '), normal(fmtDate(r.exam_date) || '..............')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            bold('3. Nơi khám: '), bold(r.exam_location || '..............')
+            bold('3. Nơi khám: '), normal(r.exam_location || '..............')
           ]
         }),
 
