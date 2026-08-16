@@ -59,7 +59,7 @@ async function logAudit(db: D1Database, action: string, targetId?: string, detai
 const GEMINI_API_KEYS = [
   process.env.GEMINI_API_KEY || ''
 ];
-const GEMINI_MODELS = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
 
 let globalKeyIndex = 0;
 
@@ -201,7 +201,7 @@ async function tryOneGeminiRequest(
   parts: any[]
 ): Promise<{ cccd?: string; full_name?: string; dob?: string; gender?: string; address?: string }> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15000);
+  const timer = setTimeout(() => controller.abort(), 20000);
   try {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
@@ -210,7 +210,11 @@ async function tryOneGeminiRequest(
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 2048 }
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 2048,
+            responseMimeType: 'application/json'
+          }
         }),
         signal: controller.signal
       }
@@ -246,7 +250,7 @@ async function tryOneGeminiRequest(
     return parsed;
   } catch (e: any) {
     clearTimeout(timer);
-    if (e.name === 'AbortError') throw new Error('AI phản hồi quá chậm (timeout 15s). Vui lòng thử lại.');
+    if (e.name === 'AbortError') throw new Error('AI phản hồi quá chậm (timeout 20s). Vui lòng thử lại.');
     throw e;
   }
 }
@@ -257,14 +261,16 @@ async function callGeminiSingleImage(
   envApiKey?: string
 ): Promise<{ cccd?: string; full_name?: string; dob?: string; gender?: string; address?: string } | null> {
   const keys: string[] = [];
-  if (envApiKey && envApiKey.trim()) keys.push(envApiKey.trim());
+  if (envApiKey && envApiKey.trim()) {
+    const splitKeys = envApiKey.split(/[\n,]+/).map(k => k.trim()).filter(Boolean);
+    keys.push(...splitKeys);
+  }
   for (const k of GEMINI_API_KEYS) {
-    if (k.trim() && !keys.includes(k)) keys.push(k);
+    if (k.trim() && !keys.includes(k.trim())) keys.push(k.trim());
   }
 
-  const prompt = `Bạn là AI chuyên đọc thông tin từ thẻ Căn cước công dân (CCCD) Việt Nam.
-Hãy đọc chính xác các thông tin xuất hiện trên ảnh thẻ này (mặt trước hoặc mặt sau).
-Trả về CHỈ một JSON thuần (không markdown, không giải thích) với cấu trúc sau:
+  const prompt = `Bạn là trợ lý AI chuyên nghiệp đọc thông tin thẻ Căn cước công dân (CCCD) Việt Nam.
+Hãy trích xuất chính xác các trường sau dưới dạng JSON:
 {
   "cccd": "12 chữ số CCCD (chỉ số, không khoảng trắng)",
   "full_name": "HỌ VÀ TÊN IN HOA",
@@ -272,7 +278,7 @@ Trả về CHỈ một JSON thuần (không markdown, không giải thích) vớ
   "gender": "Nam hoặc Nữ",
   "address": "Nơi thường trú / Quê quán đầy đủ"
 }
-Nếu thông tin nào không xuất hiện trên ảnh thì để chuỗi rỗng "". Chỉ trả về JSON thuần, không thêm markdown.`;
+Nếu không tìm thấy trường nào thì để chuỗi rỗng "".`;
 
   const parts = [
     { text: prompt },
