@@ -331,7 +331,7 @@ function buildDoc(r: HealthRecord): Document {
                     }),
                     new Paragraph({
                       alignment: AlignmentType.CENTER,
-                      spacing: { before: 550 },
+                      spacing: { before: 900 },
                       children: [bold((r.full_name || '').toUpperCase(), 22)]
                     })
                   ]

@@ -61,9 +61,9 @@ async function getLogoBase64(): Promise<string> {
     const boxes = Array.from({ length: 12 }, (_, i) => {
       const ch = str[i] || '';
       const x = i * 18;
-      return `<rect x="${x + 0.5}" y="0.5" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1"/><text x="${x + 8.5}" y="14.5" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#000">${ch}</text>`;
+      return `<rect x="${x + 1}" y="1" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1.2"/><text x="${x + 9}" y="11" font-family="'Times New Roman', serif" font-size="12.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#000">${ch}</text>`;
     }).join('');
-    return `<svg width="216" height="20" style="vertical-align:middle;margin-left:4px;display:inline-block;">${boxes}</svg>`;
+    return `<svg width="225" height="22" viewBox="0 0 225 22" style="vertical-align:middle;margin-left:4px;display:inline-block;">${boxes}</svg>`;
   };
 
   // Single SVG element for entire BHYT box group
@@ -74,18 +74,18 @@ async function getLogoBase64(): Promise<string> {
     const part1 = Array.from({ length: 2 }, (_, i) => {
       const ch = part1Str[i] || '';
       const x = i * 18;
-      return `<rect x="${x + 0.5}" y="0.5" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1"/><text x="${x + 8.5}" y="14.5" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#000">${ch}</text>`;
+      return `<rect x="${x + 1}" y="1" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1.2"/><text x="${x + 9}" y="11" font-family="'Times New Roman', serif" font-size="12.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#000">${ch}</text>`;
     }).join('');
 
-    const dash = `<text x="43.5" y="14.5" font-family="'Times New Roman', serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#000">-</text>`;
+    const dash = `<text x="44" y="11" font-family="'Times New Roman', serif" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#000">-</text>`;
 
     const part2 = Array.from({ length: 13 }, (_, i) => {
       const ch = part2Str[i] || '';
       const x = 52 + i * 18;
-      return `<rect x="${x + 0.5}" y="0.5" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1"/><text x="${x + 8.5}" y="14.5" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#000">${ch}</text>`;
+      return `<rect x="${x + 1}" y="1" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1.2"/><text x="${x + 9}" y="11" font-family="'Times New Roman', serif" font-size="12.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#000">${ch}</text>`;
     }).join('');
 
-    return `<svg width="286" height="20" style="vertical-align:middle;margin-left:4px;display:inline-block;">${part1}${dash}${part2}</svg>`;
+    return `<svg width="295" height="22" viewBox="0 0 295 22" style="vertical-align:middle;margin-left:4px;display:inline-block;">${part1}${dash}${part2}</svg>`;
   };
 
   const cccdStr = (r.cccd || '').replace(/\D/g, '');
@@ -96,7 +96,7 @@ async function getLogoBase64(): Promise<string> {
 
   // SVG Checkbox square with vector checkmark
   const cb = (checked: boolean) =>
-    `<svg width="12" height="12" style="vertical-align:middle;margin-right:4px;display:inline-block;"><rect x="0.5" y="0.5" width="11" height="11" fill="#fff" stroke="#000" stroke-width="1"/>${checked ? '<path d="M 2 5.5 L 4.5 8.5 L 9.5 2.5" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' : ''}</svg>`;
+    `<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:middle;margin-right:4px;display:inline-block;"><rect x="1" y="1" width="11" height="11" fill="#fff" stroke="#000" stroke-width="1.2"/>${checked ? '<path d="M 2.5 6 L 5 9 L 9.5 3" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' : ''}</svg>`;
 
   return `
 <div style="font-family:'Times New Roman',Times,serif;font-size:11.5px;color:#000;line-height:1.45;padding:12px 24px;background:#fff;width:740px;box-sizing:border-box;margin:0 auto;">
@@ -170,13 +170,13 @@ async function getLogoBase64(): Promise<string> {
   </div>
 
   <!-- Signature -->
-  <div style="display:flex;justify-content:flex-end;margin-top:10px;text-align:center;">
-    <div style="width:250px;">
-      <div style="font-style:italic;font-size:10.5px;">...................., ngày ..... tháng ${currentMonth} năm 2026</div>
-      <div style="margin-top:2px;font-weight:bold;font-size:11px;">Người khai</div>
-      <div style="font-size:10px;font-style:italic;">(Ký và ghi rõ họ tên)</div>
-      <div style="height:38px;"></div>
-      <div style="text-transform:uppercase;font-weight:bold;font-size:11px;">${r.full_name || ''}</div>
+  <div style="display:flex;justify-content:flex-end;margin-top:12px;text-align:center;">
+    <div style="width:260px;">
+      <div style="font-style:italic;font-size:11px;">Tân An Hội, ngày ..... tháng ${currentMonth} năm 2026</div>
+      <div style="margin-top:3px;font-weight:bold;font-size:11.5px;">Người khai</div>
+      <div style="font-size:10.5px;font-style:italic;">(Ký và ghi rõ họ tên)</div>
+      <div style="height:72px;"></div>
+      <div style="text-transform:uppercase;font-weight:bold;font-size:11.5px;">${r.full_name || ''}</div>
     </div>
   </div>
 </div>`;
