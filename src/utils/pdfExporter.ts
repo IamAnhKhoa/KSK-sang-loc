@@ -56,38 +56,60 @@ async function getLogoBase64(): Promise<string> {
     return `<b style="font-weight:bold;${uppercase ? ' text-transform:uppercase;' : ''}">${v}</b>`;
   };
 
-  // Ultra-clean HTML span box for CCCD & BHYT digits (compatible with html2canvas block flow)
-  const boxSpan = (ch: string) =>
-    `<span style="display:inline-block;width:15px;height:17px;border:1px solid #000;text-align:center;line-height:17px;font-family:'Times New Roman',Times,serif;font-size:11px;font-weight:bold;margin-right:1px;vertical-align:middle;box-sizing:border-box;">${ch || '&nbsp;'}</span>`;
+  // Single SVG element for entire CCCD box group (100% pixel-perfect vector rendering in html2canvas)
+  const renderCccdSvg = (str: string) => {
+    const boxes = Array.from({ length: 12 }, (_, i) => {
+      const ch = str[i] || '';
+      const x = i * 18;
+      return `<rect x="${x + 0.5}" y="0.5" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1"/><text x="${x + 8.5}" y="14.5" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#000">${ch}</text>`;
+    }).join('');
+    return `<svg width="216" height="20" style="vertical-align:middle;margin-left:4px;display:inline-block;">${boxes}</svg>`;
+  };
 
-  const renderBoxesSpan = (str: string, length: number) => {
-    return Array.from({ length }, (_, i) => boxSpan(str[i] || '')).join('');
+  // Single SVG element for entire BHYT box group
+  const renderBhytSvg = (str: string) => {
+    const part1Str = str.substring(0, 2);
+    const part2Str = str.substring(2);
+
+    const part1 = Array.from({ length: 2 }, (_, i) => {
+      const ch = part1Str[i] || '';
+      const x = i * 18;
+      return `<rect x="${x + 0.5}" y="0.5" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1"/><text x="${x + 8.5}" y="14.5" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#000">${ch}</text>`;
+    }).join('');
+
+    const dash = `<text x="43.5" y="14.5" font-family="'Times New Roman', serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#000">-</text>`;
+
+    const part2 = Array.from({ length: 13 }, (_, i) => {
+      const ch = part2Str[i] || '';
+      const x = 52 + i * 18;
+      return `<rect x="${x + 0.5}" y="0.5" width="16" height="19" fill="#fff" stroke="#000" stroke-width="1"/><text x="${x + 8.5}" y="14.5" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#000">${ch}</text>`;
+    }).join('');
+
+    return `<svg width="286" height="20" style="vertical-align:middle;margin-left:4px;display:inline-block;">${part1}${dash}${part2}</svg>`;
   };
 
   const cccdStr = (r.cccd || '').replace(/\D/g, '');
-  const cccdBoxes = renderBoxesSpan(cccdStr, 12);
+  const cccdBoxes = renderCccdSvg(cccdStr);
 
   const bhytStr = (r.bhyt || '').replace(/[\s-]/g, '');
-  const bhytBoxes1 = renderBoxesSpan(bhytStr.substring(0, 2), 2);
-  const bhytBoxes2 = renderBoxesSpan(bhytStr.substring(2), 13);
+  const bhytBoxes = renderBhytSvg(bhytStr);
 
-  // Pure HTML Checkbox span
+  // SVG Checkbox square with vector checkmark
   const cb = (checked: boolean) =>
-    `<span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:10px;font-size:9px;font-weight:bold;font-family:'Times New Roman',Times,serif;vertical-align:middle;margin-right:4px;box-sizing:border-box;">${checked ? '✓' : '&nbsp;'}</span>`;
+    `<svg width="12" height="12" style="vertical-align:middle;margin-right:4px;display:inline-block;"><rect x="0.5" y="0.5" width="11" height="11" fill="#fff" stroke="#000" stroke-width="1"/>${checked ? '<path d="M 2 5.5 L 4.5 8.5 L 9.5 2.5" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' : ''}</svg>`;
 
   return `
 <div style="font-family:'Times New Roman',Times,serif;font-size:11.5px;color:#000;line-height:1.45;padding:12px 24px;background:#fff;width:740px;box-sizing:border-box;margin:0 auto;">
   <!-- Header -->
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-    <div style="width:50px;flex-shrink:0;text-align:center;">${logoHTML}</div>
-    <div style="flex:1;text-align:center;">
-      <div style="font-size:10px;font-weight:bold;">...................................</div>
-      <div style="font-size:10px;font-weight:bold;margin-top:2px;">...................................</div>
-      <div style="font-size:10px;text-decoration:underline;margin-top:-2px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+    <div style="text-align:center;width:45%;">
+      <div style="font-size:11px;font-weight:bold;text-transform:uppercase;">UBND XÃ TÂN AN HỘI</div>
+      <div style="font-size:11.5px;font-weight:bold;text-transform:uppercase;text-decoration:underline;">TRẠM Y TẾ</div>
     </div>
-    <div style="flex:1;text-align:center;">
-      <div style="font-size:10px;font-weight:bold;text-transform:uppercase;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
-      <div style="font-size:10.5px;font-weight:bold;text-decoration:underline;">Độc lập - Tự do - Hạnh phúc</div>
+    <div style="text-align:center;width:52%;">
+      <div style="font-size:11px;font-weight:bold;text-transform:uppercase;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+      <div style="font-size:11px;font-weight:bold;">Độc lập - Tự do - Hạnh phúc</div>
+      <div style="width:110px;height:1px;background:#000;margin:2px auto 0;"></div>
     </div>
   </div>
 
@@ -106,7 +128,7 @@ async function getLogoBase64(): Promise<string> {
     <div style="padding:1.5px 0;">4.&nbsp;&nbsp;Dân tộc: ${dotsOrVal(r.ethnicity || 'Kinh', 25)}</div>
     <div style="padding:1.5px 0;">5.&nbsp;&nbsp;Nhóm máu <i>(nếu có)</i>: ${dotsOrVal(r.blood_type, 30)}</div>
     <div style="padding:2.5px 0;">6.&nbsp;&nbsp;Số CCCD/Mã số định danh:&nbsp;${cccdBoxes}</div>
-    <div style="padding:2.5px 0;">7.&nbsp;&nbsp;Số thẻ BHYT:&nbsp;${bhytBoxes1}&nbsp;-&nbsp;${bhytBoxes2}</div>
+    <div style="padding:2.5px 0;">7.&nbsp;&nbsp;Số thẻ BHYT:&nbsp;${bhytBoxes}</div>
     <div style="padding:1.5px 0;">8.&nbsp;&nbsp;Nơi ở hiện tại: ${dotsOrVal(currentAddress, 50)}</div>
     <div style="padding:1.5px 0 1.5px 24px;">Xã, phường: ${dotsOrVal(ward || 'Xã Tân An Hội', 40)}</div>
     <div style="padding:1.5px 0;">9.&nbsp;&nbsp;Nghề nghiệp: ${dotsOrVal(r.job, 45)}</div>

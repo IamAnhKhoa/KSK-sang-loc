@@ -103,15 +103,11 @@ function buildDoc(r: HealthRecord): Document {
                   children: [
                     new Paragraph({
                       alignment: AlignmentType.CENTER,
-                      children: [bold('...................................', 19)]
+                      children: [bold('UBND XÃ TÂN AN HỘI', 19)]
                     }),
                     new Paragraph({
                       alignment: AlignmentType.CENTER,
-                      children: [bold('...................................', 19)]
-                    }),
-                    new Paragraph({
-                      alignment: AlignmentType.CENTER,
-                      children: [boldUnderline('                  ', 19)]
+                      children: [boldUnderline('TRẠM Y TẾ', 21)]
                     })
                   ]
                 }),
