@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ksk-sang-loc",
+  "main": "src/backend/index.ts",
+  "compatibility_date": "2026-08-14",
+  "workers_dev": true,
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ksk_db",
+      "database_id": "863de945-c1eb-4602-b9a0-74b7c8fa4a3d"
+    }
+  ],
+  "routes": [
+    {
+      "pattern": "nhaplieu.tak.id.vn",
+      "custom_domain": true
+    }
+  ]
+}
