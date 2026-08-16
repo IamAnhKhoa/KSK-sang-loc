@@ -59,8 +59,7 @@ async function logAudit(db: D1Database, action: string, targetId?: string, detai
 const GEMINI_API_KEYS = [
   process.env.GEMINI_API_KEY || ''
 ];
-const GEMINI_MODEL = 'gemini-2.5-flash';
-
+const GEMINI_MODELS = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
 
 let globalKeyIndex = 0;
 
@@ -190,9 +189,9 @@ async function callOCRSpaceSingleImage(base64: string): Promise<string | null> {
 function translateGeminiError(status: number, msg?: string): string {
   if (status === 429) return 'AI đang quá tải (429) — vui lòng thử lại sau ít giây.';
   if (status === 401 || status === 403) return 'API key Gemini không hợp lệ hoặc hết hạn (403).';
-  if (status === 400) return 'Ảnh không đọc được (400) — vui lòng chụp lại rõ hơn.';
+  if (status === 400 || status === 404) return `Lỗi mô hình AI (${status}) — đang thử mô hình khác.`;
   if (status === 500 || status === 503) return `Lỗi server AI (${status}) — thử lại sau.`;
-  if (msg && msg.includes('abort')) return 'AI phản hồi quá chậm (timeout 8s).';
+  if (msg && msg.includes('abort')) return 'AI phản hồi quá chậm (timeout 15s).';
   return `Lỗi AI (${status || 'unknown'}): ${msg || ''}`;
 }
 
@@ -202,7 +201,7 @@ async function tryOneGeminiRequest(
   parts: any[]
 ): Promise<{ cccd?: string; full_name?: string; dob?: string; gender?: string; address?: string }> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 25000);
+  const timer = setTimeout(() => controller.abort(), 15000);
   try {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
@@ -218,12 +217,12 @@ async function tryOneGeminiRequest(
     );
     clearTimeout(timer);
     if (!res.ok) {
-      const errMsg = translateGeminiError(res.status);
+      const errText = await res.text().catch(() => '');
+      console.warn(`Gemini model ${model} returned ${res.status}:`, errText);
+      const errMsg = translateGeminiError(res.status, errText);
       throw new Error(errMsg);
     }
     const data: any = await res.json();
-    // gemini-2.5-flash returns thinking tokens in parts[0] (part.thought === true),
-    // the actual JSON response is in a later part. We must skip thought parts.
     const allParts: any[] = data?.candidates?.[0]?.content?.parts || [];
     let rawText = '';
     for (const part of allParts) {
@@ -232,7 +231,6 @@ async function tryOneGeminiRequest(
         break;
       }
     }
-    // Fallback: if all parts have thought=true or no non-thought part found, use last part
     if (!rawText && allParts.length > 0) {
       rawText = allParts[allParts.length - 1]?.text?.trim() || '';
     }
@@ -248,7 +246,7 @@ async function tryOneGeminiRequest(
     return parsed;
   } catch (e: any) {
     clearTimeout(timer);
-    if (e.name === 'AbortError') throw new Error('AI phản hồi quá chậm (timeout 25s). Vui lòng thử lại.');
+    if (e.name === 'AbortError') throw new Error('AI phản hồi quá chậm (timeout 15s). Vui lòng thử lại.');
     throw e;
   }
 }
@@ -281,28 +279,15 @@ Nếu thông tin nào không xuất hiện trên ảnh thì để chuỗi rỗng
     { inlineData: { mimeType: img.mimeType || 'image/jpeg', data: img.base64 } }
   ];
 
-  // Try gemini-2.5-flash with each available key — first success wins
   if (keys.length > 0) {
-    const raceTasks = keys.map(apiKey => tryOneGeminiRequest(GEMINI_MODEL, apiKey, parts));
-    try {
-      const winner = await Promise.any(raceTasks);
-      if (winner) return winner;
-    } catch (aggErr: any) {
-      // Collect the most meaningful error message from AggregateError
-      let lastErrMsg = 'Không kết nối được Gemini AI.';
-      if (aggErr?.errors?.length > 0) {
-        // Prefer 429/403/timeout errors as they are most meaningful
-        const priority = aggErr.errors.find((e: any) =>
-          e.message?.includes('429') || e.message?.includes('403') ||
-          e.message?.includes('timeout') || e.message?.includes('quá chậm')
-        );
-        lastErrMsg = priority
-          ? priority.message
-          : (aggErr.errors[aggErr.errors.length - 1]?.message || lastErrMsg);
+    for (const model of GEMINI_MODELS) {
+      const raceTasks = keys.map(apiKey => tryOneGeminiRequest(model, apiKey, parts));
+      try {
+        const winner = await Promise.any(raceTasks);
+        if (winner && (winner.cccd || winner.full_name)) return winner;
+      } catch (aggErr: any) {
+        console.warn(`Gemini model ${model} failed, trying next model...`);
       }
-      console.warn('Gemini ALL keys failed:', lastErrMsg);
-      // Surface ALL errors so UI shows the real reason instead of falling through silently
-      return { _error: `[Gemini] ${lastErrMsg}` } as any;
     }
   }
 

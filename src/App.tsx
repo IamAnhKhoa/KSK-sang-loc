@@ -7,6 +7,7 @@ import { QRScannerModal } from './components/QRScannerModal';
 import { CCCDImageUploadModal } from './components/CCCDImageUploadModal';
 import { LookupModal } from './components/LookupModal';
 import { ParsedCCCD } from './utils/qrParser';
+import { convertOldAddressToNew } from './utils/addressMapper';
 import { Citizen, FormDataState } from './types';
 import { UserCheck, LogOut, Code2, X, CheckCircle2, Globe, Phone } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
