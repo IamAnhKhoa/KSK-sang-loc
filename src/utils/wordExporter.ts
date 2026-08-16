@@ -103,11 +103,15 @@ function buildDoc(r: HealthRecord): Document {
                   children: [
                     new Paragraph({
                       alignment: AlignmentType.CENTER,
-                      children: [bold('ỦY BAN NHÂN DÂN XÃ TÂN AN HỘI', 19)]
+                      children: [bold('...................................', 19)]
                     }),
                     new Paragraph({
                       alignment: AlignmentType.CENTER,
-                      children: [boldUnderline('TRẠM Y TẾ', 21)]
+                      children: [bold('...................................', 19)]
+                    }),
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [boldUnderline('                  ', 19)]
                     })
                   ]
                 }),
@@ -149,99 +153,104 @@ function buildDoc(r: HealthRecord): Document {
         // 3. Section I - Administrative Info (Matching Exact Word Template Wording)
         new Paragraph({
           spacing: { before: 80, after: 60 },
-          children: [bold('THÔNG TIN HÀNH CHÍNH', 22)]
+          children: [bold('A. THÔNG TIN HÀNH CHÍNH', 22)]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            bold('Họ và tên (viết chữ in hoa): '), bold((r.full_name || '').toUpperCase()),
-            normal('        '),
-            bold('Giới tính: '), normal(`[${r.gender === 'Nam' ? 'X' : ' '}] Nam    [${r.gender === 'Nữ' ? 'X' : ' '}] Nữ`)
+            normal('1. Họ và tên '), italic('(viết chữ in hoa)'), normal(': '), bold((r.full_name || '').toUpperCase())
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            bold('Ngày tháng năm sinh: '), normal(fmtDate(r.dob) || '..............'),
-            normal('        '),
-            bold('Dân tộc: '), normal(r.ethnicity || 'Kinh'),
-            normal('        '),
-            bold('Nhóm máu (nếu có): '), normal(r.blood_type || '..............')
+            normal('2. Giới tính: '), normal(`[${r.gender === 'Nam' ? 'X' : ' '}] Nam    [${r.gender === 'Nữ' ? 'X' : ' '}] Nữ`)
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            bold('Số CCCD/Mã số định danh: '), bold(r.cccd || '..............'),
+            normal('3. Ngày tháng năm sinh: '), bold(fmtDate(r.dob) || '..............'),
             normal('        '),
-            bold('Số thẻ BHYT: '), normal(r.bhyt || '..............')
-          ]
-        }),
-
-        new Paragraph({
-          spacing: { before: 40, after: 40 },
-          children: [
-            bold('Nơi ở hiện tại: '), normal(currentAddress || '........................................'),
-          ]
-        }),
-
-        new Paragraph({
-          spacing: { before: 40, after: 40 },
-          children: [
-            bold('Xã, phường: '), normal(ward || 'Xã Tân An Hội'),
+            normal('4. Dân tộc: '), bold(r.ethnicity || 'Kinh'),
             normal('        '),
-            bold('Thành phố: '), normal(city || 'Thành Phố Hồ Chí Minh')
+            normal('5. Nhóm máu '), italic('(nếu có)'), normal(': '), bold(r.blood_type || '..............')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            bold('Nghề nghiệp: '), normal(r.job || '..............'),
+            normal('6. Số CCCD/Mã số định danh: '), bold(r.cccd || '..............'),
             normal('        '),
-            bold('Nơi làm việc, học tập: '), normal(r.workplace || '..............')
+            normal('7. Số thẻ BHYT: '), bold(r.bhyt || '..............')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 40 },
           children: [
-            bold('Họ tên mẹ hoặc người giám hộ (đối với trẻ từ 16 tuổi trở xuống): '), normal(r.guardian_name || '........................................................')
+            normal('8. Nơi ở hiện tại: '), bold(currentAddress || '........................................'),
+          ]
+        }),
+
+        new Paragraph({
+          spacing: { before: 40, after: 40 },
+          children: [
+            normal('    Xã, phường: '), bold(ward || 'Xã Tân An Hội'),
+            normal('        '),
+            normal('Thành phố: '), bold(city || 'Thành Phố Hồ Chí Minh')
+          ]
+        }),
+
+        new Paragraph({
+          spacing: { before: 40, after: 40 },
+          children: [
+            normal('9. Nghề nghiệp: '), bold(r.job || '..............'),
+            normal('        '),
+            normal('10. Nơi làm việc, học tập: '), bold(r.workplace || '..............')
+          ]
+        }),
+
+        new Paragraph({
+          spacing: { before: 40, after: 40 },
+          children: [
+            normal('11. Họ tên mẹ hoặc người giám hộ '), italic('(đối với trẻ từ 16 tuổi trở xuống)'), normal(': '), bold(r.guardian_name || '........................................................')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 60 },
           children: [
-            bold('Điện thoại di động: '), normal(r.phone || '..............')
+            normal('12. Điện thoại di động: '), bold(r.phone || '..............')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 30 },
-          children: [bold('Đối tượng:')]
+          children: [normal('13. Đối tượng:')]
         }),
 
         ...categories.map(c => new Paragraph({
           spacing: { before: 20, after: 20 },
           indent: { left: 360 },
           children: [
-            normal(`[${r.category === c ? 'X' : ' '}]  ${c}`)
+            italic(`[${r.category === c ? 'X' : ' '}]  ${c}`)
           ]
         })),
 
         // 4. Section II - Medical Examination Info
         new Paragraph({
           spacing: { before: 140, after: 60 },
-          children: [bold('THÔNG TIN VỀ KHÁM SỨC KHỎE HOẶC KHÁM SÀNG LỌC', 22)]
+          children: [bold('B. THÔNG TIN VỀ KHÁM SỨC KHỎE HOẶC KHÁM SÀNG LỌC', 22)]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 30 },
-          children: [bold('Hình thức khám')]
+          children: [bold('1. Hình thức khám')]
         }),
 
         new Paragraph({
@@ -259,29 +268,36 @@ function buildDoc(r: HealthRecord): Document {
         ...screeningOptions.map(opt => new Paragraph({
           spacing: { before: 15, after: 15 },
           indent: { left: 720 },
-          children: [normal(`[${screeningList.includes(opt) ? 'X' : ' '}] ${opt}`)]
+          children: [italic(`[${screeningList.includes(opt) ? 'X' : ' '}] ${opt}`)]
         })),
 
         ...(r.screening_other ? [
           new Paragraph({
             spacing: { before: 15, after: 15 },
             indent: { left: 720 },
-            children: [normal(`[X] Khác, ghi rõ: ${r.screening_other}`)]
+            children: [italic(`[X] Khác, ghi rõ: ${r.screening_other}`)]
           })
         ] : []),
 
         new Paragraph({
           spacing: { before: 60, after: 40 },
           children: [
-            bold('Ngày khám: '), normal(fmtDate(r.exam_date) || '..............'),
-            normal('        '),
-            bold('Nơi khám: '), normal(r.exam_location || '..............')
+            bold('2. Ngày khám: '), bold(fmtDate(r.exam_date) || '..............')
+          ]
+        }),
+
+        new Paragraph({
+          spacing: { before: 40, after: 40 },
+          children: [
+            bold('3. Nơi khám: '), bold(r.exam_location || '..............')
           ]
         }),
 
         new Paragraph({
           spacing: { before: 40, after: 30 },
-          children: [bold('Kết quả khám (ghi theo kết luận của phiếu khám sức khỏe/phiếu khám sàng lọc nếu có):')]
+          children: [
+            bold('4. Kết quả khám '), normal('(ghi theo kết luận của phiếu khám sức khỏe/phiếu khám sàng lọc nếu có):')
+          ]
         }),
 
         new Paragraph({

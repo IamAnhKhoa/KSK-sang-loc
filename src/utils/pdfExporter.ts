@@ -56,24 +56,24 @@ async function getLogoBase64(): Promise<string> {
     return `<b style="font-weight:bold;${uppercase ? ' text-transform:uppercase;' : ''}">${v}</b>`;
   };
 
-  // Render CCCD & BHYT boxes via SVG for 100% pixel-perfect vector alignment in html2canvas
-  const renderSvgBox = (ch: string) =>
-    `<svg width="17" height="20" style="vertical-align:middle;margin-right:1px;display:inline-block;"><rect x="0.5" y="0.5" width="16" height="19" fill="none" stroke="#000" stroke-width="1"/><text x="8.5" y="14" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#000">${ch || ''}</text></svg>`;
+  // Ultra-clean HTML span box for CCCD & BHYT digits (compatible with html2canvas block flow)
+  const boxSpan = (ch: string) =>
+    `<span style="display:inline-block;width:15px;height:17px;border:1px solid #000;text-align:center;line-height:17px;font-family:'Times New Roman',Times,serif;font-size:11px;font-weight:bold;margin-right:1px;vertical-align:middle;box-sizing:border-box;">${ch || '&nbsp;'}</span>`;
 
-  const renderBoxesSvg = (str: string, length: number) => {
-    return Array.from({ length }, (_, i) => renderSvgBox(str[i] || '')).join('');
+  const renderBoxesSpan = (str: string, length: number) => {
+    return Array.from({ length }, (_, i) => boxSpan(str[i] || '')).join('');
   };
 
   const cccdStr = (r.cccd || '').replace(/\D/g, '');
-  const cccdBoxes = renderBoxesSvg(cccdStr, 12);
+  const cccdBoxes = renderBoxesSpan(cccdStr, 12);
 
   const bhytStr = (r.bhyt || '').replace(/[\s-]/g, '');
-  const bhytBoxes1 = renderBoxesSvg(bhytStr.substring(0, 2), 2);
-  const bhytBoxes2 = renderBoxesSvg(bhytStr.substring(2), 13);
+  const bhytBoxes1 = renderBoxesSpan(bhytStr.substring(0, 2), 2);
+  const bhytBoxes2 = renderBoxesSpan(bhytStr.substring(2), 13);
 
-  // SVG Checkbox square with vector checkmark
+  // Pure HTML Checkbox span
   const cb = (checked: boolean) =>
-    `<svg width="12" height="12" style="vertical-align:-1px;margin-right:4px;display:inline-block;"><rect x="0.5" y="0.5" width="11" height="11" fill="none" stroke="#000" stroke-width="1"/>${checked ? '<path d="M 2 5.5 L 4.5 8.5 L 9.5 2.5" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' : ''}</svg>`;
+    `<span style="display:inline-block;width:11px;height:11px;border:1px solid #000;text-align:center;line-height:10px;font-size:9px;font-weight:bold;font-family:'Times New Roman',Times,serif;vertical-align:middle;margin-right:4px;box-sizing:border-box;">${checked ? '✓' : '&nbsp;'}</span>`;
 
   return `
 <div style="font-family:'Times New Roman',Times,serif;font-size:11.5px;color:#000;line-height:1.45;padding:12px 24px;background:#fff;width:740px;box-sizing:border-box;margin:0 auto;">
@@ -81,12 +81,13 @@ async function getLogoBase64(): Promise<string> {
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
     <div style="width:50px;flex-shrink:0;text-align:center;">${logoHTML}</div>
     <div style="flex:1;text-align:center;">
-      <div style="font-size:10px;font-weight:bold;text-transform:uppercase;">ỦY BAN NHÂN DÂN XÃ TÂN AN HỘI</div>
-      <div style="font-size:11.5px;font-weight:800;text-transform:uppercase;text-decoration:underline;">TRẠM Y TẾ</div>
+      <div style="font-size:10px;font-weight:bold;">...................................</div>
+      <div style="font-size:10px;font-weight:bold;margin-top:2px;">...................................</div>
+      <div style="font-size:10px;text-decoration:underline;margin-top:-2px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
     </div>
     <div style="flex:1;text-align:center;">
       <div style="font-size:10px;font-weight:bold;text-transform:uppercase;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
-      <div style="font-size:10.5px;text-decoration:underline;">Độc lập - Tự do - Hạnh phúc</div>
+      <div style="font-size:10.5px;font-weight:bold;text-decoration:underline;">Độc lập - Tự do - Hạnh phúc</div>
     </div>
   </div>
 
@@ -97,75 +98,59 @@ async function getLogoBase64(): Promise<string> {
   </div>
 
   <!-- A. THÔNG TIN HÀNH CHÍNH -->
-  <div style="font-weight:800;font-size:11.5px;margin-bottom:3px;">A.&nbsp;&nbsp;THÔNG TIN HÀNH CHÍNH</div>
+  <div style="font-weight:bold;font-size:11.5px;margin-bottom:4px;">A.&nbsp;&nbsp;THÔNG TIN HÀNH CHÍNH</div>
   <div style="font-size:11.5px;">
-    <div style="padding:1.5px 0;">1.&nbsp;&nbsp;<b>Họ và tên</b> <i>(viết chữ in hoa)</i>: ${dotsOrVal(r.full_name, 45, true)}</div>
-    <div style="padding:1.5px 0;">2.&nbsp;&nbsp;<b>Giới tính:</b>&nbsp;${cb(r.gender==='Nam')} Nam &nbsp;&nbsp;&nbsp;&nbsp; ${cb(r.gender==='Nữ')} Nữ</div>
-    <div style="padding:1.5px 0;">3.&nbsp;&nbsp;<b>Ngày tháng năm sinh:</b> ${dotsOrVal(fmtDate(r.dob), 30)}</div>
-    <div style="padding:1.5px 0;">4.&nbsp;&nbsp;<b>Dân tộc:</b> ${dotsOrVal(r.ethnicity || 'Kinh', 25)}</div>
-    <div style="padding:1.5px 0;">5.&nbsp;&nbsp;<b>Nhóm máu</b> <i>(nếu có)</i>: ${dotsOrVal(r.blood_type, 30)}</div>
-    <div style="padding:2.5px 0;">6.&nbsp;&nbsp;<b>Số CCCD/Mã số định danh:</b>&nbsp;${cccdBoxes}</div>
-    <div style="padding:2.5px 0;">7.&nbsp;&nbsp;<b>Số thẻ BHYT:</b>&nbsp;${bhytBoxes1}&nbsp;-&nbsp;${bhytBoxes2}</div>
-    <div style="padding:1.5px 0;">8.&nbsp;&nbsp;<b>Nơi ở hiện tại:</b> ${dotsOrVal(currentAddress, 50)}</div>
-    <div style="padding:1.5px 0 1.5px 24px;"><b>Xã, phường:</b> ${dotsOrVal(ward || 'Xã Tân An Hội', 40)}</div>
-    <div style="padding:1.5px 0;">9.&nbsp;&nbsp;<b>Nghề nghiệp:</b> ${dotsOrVal(r.job, 45)}</div>
-    <div style="padding:1.5px 0;">10.&nbsp;<b>Nơi làm việc, học tập:</b> ${dotsOrVal(r.workplace, 40)}</div>
-    <div style="padding:1.5px 0 1.5px 24px;"><b>Xã, phường:</b> ${dotsOrVal('', 50)}</div>
-    <div style="padding:1.5px 0;">11.&nbsp;<b>Họ tên mẹ hoặc người giám hộ</b> <i>(đối với trẻ từ 16 tuổi trở xuống)</i>: ${dotsOrVal(r.guardian_name, 30)}</div>
-    <div style="padding:1.5px 0;">12.&nbsp;<b>Điện thoại di động:</b> ${dotsOrVal(r.phone, 35)}</div>
-    <div style="padding:1.5px 0;">13.&nbsp;<b>Đối tượng:</b></div>
-    <!-- 2 Column Layout for Categories to save page height -->
-    <table style="width:100%;font-size:11px;margin-left:24px;border-collapse:collapse;">
-      <tr>
-        <td style="padding:1px 0;width:50%;">${cb(r.category==='Trẻ đi học')} <i>Trẻ đi học</i></td>
-        <td style="padding:1px 0;">${cb(r.category==='Người lao động chính thức (theo Luật An toàn, Vệ sinh lao động)')} <i>Người lao động chính thức</i></td>
-      </tr>
-      <tr>
-        <td style="padding:1px 0;">${cb(r.category==='Trẻ không đi học')} <i>Trẻ không đi học</i></td>
-        <td style="padding:1px 0;">${cb(r.category==='Người lao động phi chính thức')} <i>Người lao động phi chính thức</i></td>
-      </tr>
-      <tr>
-        <td style="padding:1px 0;">${cb(r.category==='Sinh viên, học viên')} <i>Sinh viên, học viên</i></td>
-        <td style="padding:1px 0;">${cb(r.category==='Người cao tuổi')} <i>Người cao tuổi</i></td>
-      </tr>
-    </table>
+    <div style="padding:1.5px 0;">1.&nbsp;&nbsp;Họ và tên <i>(viết chữ in hoa)</i>: ${dotsOrVal(r.full_name, 45, true)}</div>
+    <div style="padding:1.5px 0;">2.&nbsp;&nbsp;Giới tính:&nbsp;&nbsp;${cb(r.gender==='Nam')}&nbsp;Nam &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${cb(r.gender==='Nữ')}&nbsp;Nữ</div>
+    <div style="padding:1.5px 0;">3.&nbsp;&nbsp;Ngày tháng năm sinh: ${dotsOrVal(fmtDate(r.dob), 30)}</div>
+    <div style="padding:1.5px 0;">4.&nbsp;&nbsp;Dân tộc: ${dotsOrVal(r.ethnicity || 'Kinh', 25)}</div>
+    <div style="padding:1.5px 0;">5.&nbsp;&nbsp;Nhóm máu <i>(nếu có)</i>: ${dotsOrVal(r.blood_type, 30)}</div>
+    <div style="padding:2.5px 0;">6.&nbsp;&nbsp;Số CCCD/Mã số định danh:&nbsp;${cccdBoxes}</div>
+    <div style="padding:2.5px 0;">7.&nbsp;&nbsp;Số thẻ BHYT:&nbsp;${bhytBoxes1}&nbsp;-&nbsp;${bhytBoxes2}</div>
+    <div style="padding:1.5px 0;">8.&nbsp;&nbsp;Nơi ở hiện tại: ${dotsOrVal(currentAddress, 50)}</div>
+    <div style="padding:1.5px 0 1.5px 24px;">Xã, phường: ${dotsOrVal(ward || 'Xã Tân An Hội', 40)}</div>
+    <div style="padding:1.5px 0;">9.&nbsp;&nbsp;Nghề nghiệp: ${dotsOrVal(r.job, 45)}</div>
+    <div style="padding:1.5px 0;">10.&nbsp;Nơi làm việc, học tập: ${dotsOrVal(r.workplace, 40)}</div>
+    <div style="padding:1.5px 0 1.5px 24px;">Xã, phường: ${dotsOrVal('', 50)}</div>
+    <div style="padding:1.5px 0;">11.&nbsp;Họ tên mẹ hoặc người giám hộ <i>(đối với trẻ từ 16 tuổi trở xuống)</i>: ${dotsOrVal(r.guardian_name, 30)}</div>
+    <div style="padding:1.5px 0;">12.&nbsp;Điện thoại di động: ${dotsOrVal(r.phone, 35)}</div>
+    <div style="padding:1.5px 0;">13.&nbsp;Đối tượng:</div>
+    <div style="margin-left:24px;margin-top:2px;">
+      <div style="display:inline-block;width:48%;padding:1px 0;">${cb(r.category==='Trẻ đi học')} <i>Trẻ đi học</i></div>
+      <div style="display:inline-block;width:50%;padding:1px 0;">${cb(r.category==='Người lao động chính thức (theo Luật An toàn, Vệ sinh lao động)')} <i>Người lao động chính thức (theo Luật An toàn, Vệ sinh lao động)</i></div>
+      <div style="display:inline-block;width:48%;padding:1px 0;">${cb(r.category==='Trẻ không đi học')} <i>Trẻ không đi học</i></div>
+      <div style="display:inline-block;width:50%;padding:1px 0;">${cb(r.category==='Người lao động phi chính thức')} <i>Người lao động phi chính thức</i></div>
+      <div style="display:inline-block;width:48%;padding:1px 0;">${cb(r.category==='Sinh viên, học viên')} <i>Sinh viên, học viên</i></div>
+      <div style="display:inline-block;width:50%;padding:1px 0;">${cb(r.category==='Người cao tuổi')} <i>Người cao tuổi</i></div>
+    </div>
   </div>
 
   <!-- B. THÔNG TIN KHÁM SỨC KHỎE -->
-  <div style="font-weight:800;font-size:11.5px;margin:8px 0 3px;">B.&nbsp;&nbsp;THÔNG TIN VỀ KHÁM SỨC KHỎE HOẶC KHÁM SÀNG LỌC</div>
+  <div style="font-weight:bold;font-size:11.5px;margin:8px 0 3px;">B.&nbsp;&nbsp;THÔNG TIN VỀ KHÁM SỨC KHỎE HOẶC KHÁM SÀNG LỌC</div>
   <div style="font-size:11.5px;">
-    <div style="padding:1px 0;"><b>1.&nbsp;&nbsp;Hình thức khám:</b></div>
-    <div style="padding-left:18px;">
+    <div style="padding:1px 0;"><b>1.&nbsp;&nbsp;Hình thức khám</b></div>
+    <div style="margin-left:18px;">
       <div style="padding:1px 0;">${cb(r.exam_type==='Khám sức khỏe tổng quát')} Khám sức khỏe tổng quát</div>
       <div style="padding:1px 0;">${cb(r.exam_type==='Khám sàng lọc bệnh')} Khám sàng lọc bệnh, ghi rõ:</div>
-      <!-- 2 Column Layout for Screening Items -->
-      <table style="width:100%;font-size:11px;margin-left:18px;border-collapse:collapse;">
-        <tr>
-          <td style="padding:1px 0;width:50%;">${cb(screeningList.includes('Ung thư cổ tử cung'))} Ung thư cổ tử cung</td>
-          <td style="padding:1px 0;">${cb(screeningList.includes('Ung thư đại trực tràng'))} Ung thư đại trực tràng</td>
-        </tr>
-        <tr>
-          <td style="padding:1px 0;">${cb(screeningList.includes('Ung thư vú'))} Ung thư vú</td>
-          <td style="padding:1px 0;">${cb(screeningList.includes('Ung thư tiền liệt tuyến'))} Ung thư tiền liệt tuyến</td>
-        </tr>
-        <tr>
-          <td style="padding:1px 0;">${cb(screeningList.includes('Ung thư gan'))} Ung thư gan</td>
-          <td style="padding:1px 0;">${r.screening_other ? `${cb(true)} Khác: ${r.screening_other}` : ''}</td>
-        </tr>
-      </table>
+      <div style="margin-left:16px;margin-top:1px;">
+        <div style="display:inline-block;width:48%;padding:1px 0;">${cb(screeningList.includes('Ung thư cổ tử cung'))} <i>Ung thư cổ tử cung</i></div>
+        <div style="display:inline-block;width:50%;padding:1px 0;">${cb(screeningList.includes('Ung thư đại trực tràng'))} <i>Ung thư đại trực tràng</i></div>
+        <div style="display:inline-block;width:48%;padding:1px 0;">${cb(screeningList.includes('Ung thư vú'))} <i>Ung thư vú</i></div>
+        <div style="display:inline-block;width:50%;padding:1px 0;">${cb(screeningList.includes('Ung thư tiền liệt tuyến'))} <i>Ung thư tiền liệt tuyến</i></div>
+        <div style="display:inline-block;width:48%;padding:1px 0;">${cb(screeningList.includes('Ung thư gan'))} <i>Ung thư gan</i></div>
+        <div style="display:inline-block;width:50%;padding:1px 0;">${r.screening_other ? `${cb(true)} <i>Khác, ghi rõ: ${r.screening_other}</i>` : `${cb(false)} <i>Khác, ghi rõ:</i> ${dots(20)}`}</div>
+      </div>
     </div>
-    <div style="padding:2px 0;display:flex;gap:30px;">
-      <span><b>2.&nbsp;&nbsp;Ngày khám:</b> ${dotsOrVal(fmtDate(r.exam_date), 20)}</span>
-      <span><b>Nơi khám:</b> ${dotsOrVal(r.exam_location, 30)}</span>
-    </div>
-    <div style="padding:2px 0;"><b>3.&nbsp;&nbsp;Kết quả khám</b> <i>(ghi theo kết luận của phiếu khám sức khỏe / phiếu khám sàng lọc)</i>:</div>
+    <div style="padding:2px 0;"><b>2.&nbsp;&nbsp;Ngày khám:</b> ${dotsOrVal(fmtDate(r.exam_date), 30)}</div>
+    <div style="padding:2px 0;"><b>3.&nbsp;&nbsp;Nơi khám:</b> ${dotsOrVal(r.exam_location, 40)}</div>
+    <div style="padding:2px 0;"><b>4.&nbsp;&nbsp;Kết quả khám</b> <i>(ghi theo kết luận của phiếu khám sức khỏe/phiếu khám sàng lọc nếu có)</i>:</div>
     <div style="border:1px solid #999;border-radius:3px;padding:4px 8px;margin-top:2px;font-style:italic;min-height:28px;font-size:11px;">${r.exam_result || ''}</div>
   </div>
 
   <!-- Signature -->
   <div style="display:flex;justify-content:flex-end;margin-top:10px;text-align:center;">
     <div style="width:250px;">
-      <div style="font-style:italic;font-size:10.5px;">Tân An Hội, ngày ..... tháng ${currentMonth} năm 2026</div>
+      <div style="font-style:italic;font-size:10.5px;">...................., ngày ..... tháng ${currentMonth} năm 2026</div>
       <div style="margin-top:2px;font-weight:bold;font-size:11px;">Người khai</div>
       <div style="font-size:10px;font-style:italic;">(Ký và ghi rõ họ tên)</div>
       <div style="height:38px;"></div>
